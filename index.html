@@ -1,1 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Ticket Booking</title>
+  <!-- Font Awesome 6 (Free) for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+    }
 
+    body {
+      background: linear-gradient(145deg, #0b1a2e 0%, #1b2f4b 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    .booking-card {
+      background-color: #ffffff;
+      max-width: 1000px;
+      width: 100%;
+      border-radius: 2rem;
+      box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .card-header {
+      background: #0f2a44;
+      color: white;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .card-header i {
+      font-size: 2rem;
+      color: #7ab7ff;
+    }
+
+    .card-header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .card-header span {
+      font-size: 1rem;
+      font-weight: 400;
+      background: #1f3e5e;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      margin-left: auto;
+      color: #b8d4ff;
+    }
+
+    .booking-form {
+      padding: 2rem 2rem 2rem 2rem;
+    }
+
+    .trip-type {
+      display: flex;
+      gap: 2.5rem;
+      margin-bottom: 1.8rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e6edf5;
+    }
+
+    .trip-type label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      color: #1f3e5e;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .trip-type input[type="radio"] {
+      accent-color: #1f6dc7;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .field-group {
+      flex: 1 1 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .field-group label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      color: #4a6380;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .field-group label i {
+      font-size: 0.9rem;
+      color: #1f6dc7;
+      width: 18px;
+    }
+
+    .field-group input,
+    .field-group select {
+      padding: 0.85rem 1rem;
+      border: 1.5px solid #d4dfeb;
+      border-radius: 14px;
+      font-size: 0.98rem;
+      background: #f9fcff;
+      transition: 0.2s;
+      outline: none;
+      color: #0b1a2e;
+      font-weight: 500;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .field-group input:focus,
+    .field-group select:focus {
+      border-color: #1f6dc7;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(31, 109, 199, 0.15);
+    }
+
+    .field-group input::placeholder {
+      color: #9aafc4;
+      font-weight: 400;
+    }
+
+    /* Airport code style for from/to */
+    .airport-input {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .airport-input input {
+      flex: 1;
+    }
+
+    .swap-icon {
+      background: #eef3fa;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f6dc7;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1.5px solid #d4dfeb;
+      flex-shrink: 0;
+    }
+
+    .swap-icon:hover {
+      background: #1f6dc7;
+      color: white;
+      border-color: #1f6dc7;
+      transform: rotate(180deg);
+    }
+
+    /* passenger row */
+    .passenger-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .passenger-row .field-group {
+      flex: 1 1 150px;
+    }
+
+    /* cabin class */
+    .cabin-group select {
+      background: #f9fcff;
+    }
+
+    /* book button */
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2.2rem;
+      padding-top: 1rem;
+      border-top: 2px dashed #d9e4f0;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+    }
+
+    .price-summary {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-summary .label {
+      font-size: 0.85rem;
+      color: #617e9e;
+      font-weight: 500;
+    }
+
+    .price-summary .amount {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0b1a2e;
+      line-height: 1.2;
+    }
+
+    .price-summary .amount small {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #617e9e;
+    }
+
+    .book-btn {
+      background: #1f6dc7;
+      color: white;
+      border: none;
+      padding: 1rem 2.8rem;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 10px 20px -5px rgba(31, 109, 199, 0.4);
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .book-btn i {
+      font-size: 1.3rem;
+    }
+
+    .book-btn:hover {
+      background: #0f4f9e;
+      transform: translateY(-3px);
+      box-shadow: 0 18px 28px -8px rgba(31, 109, 199, 0.5);
+    }
+
+    .book-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 12px -4px #1f6dc7;
+    }
+
+    /* responsive */
+    @media (max-width: 700px) {
+      .booking-card {
+        border-radius: 1.5rem;
+      }
+      .booking-form {
+        padding: 1.5rem;
+      }
+      .card-header {
+        padding: 1.2rem 1.5rem;
+      }
+      .card-header h1 {
+        font-size: 1.4rem;
+      }
+      .card-header span {
+        display: none;
+      }
+      .row {
+        gap: 1rem;
+      }
+      .swap-icon {
+        width: 38px;
+        height: 38px;
+      }
+      .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .book-btn {
+        justify-content: center;
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .trip-type {
+        gap: 1.2rem;
+        flex-wrap: wrap;
+      }
+      .passenger-row {
+        gap: 1rem;
+      }
+      .airport-input {
+        flex-wrap: wrap;
+      }
+      .swap-icon {
+        margin-left: auto;
+      }
+    }
+
+    /* custom small badge */
+    .badge {
+      font-size: 0.7rem;
+      background: #e2ebf6;
+      color: #1f6dc7;
+      padding: 0.25rem 0.7rem;
+      border-radius: 30px;
+      font-weight: 600;
+      margin-left: 0.4rem;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #8ba0b8;
+      margin-top: 0.8rem;
+      letter-spacing: 0.3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="booking-card">
+    <div class="card-header">
+      <i class="fas fa-plane-departure"></i>
+      <h1>SkyWings</h1>
+      <span>FLIGHT BOOKING</span>
+    </div>
+
+    <form class="booking-form" id="flightForm">
+      <!-- Trip type -->
+      <div class="trip-type">
+        <label>
+          <input type="radio" name="trip" value="round" checked> Round trip
+        </label>
+        <label>
+          <input type="radio" name="trip" value="oneway"> One way
+        </label>
+        <label>
+          <input type="radio" name="trip" value="multi"> Multi-city
+        </label>
+      </div>
+
+      <!-- FROM / TO with swap -->
+      <div class="row">
+        <div class="field-group" style="flex: 2 1 260px;">
+          <label><i class="fas fa-map-pin"></i> From</label>
+          <div class="airport-input">
+            <input type="text" id="from" placeholder="City or airport" value="New York (JFK)" list="airports">
+            <div class="swap-icon" id="swapBtn" title="Swap departure and destination">
+              <i class="fas fa-arrow-right-arrow-left"></i>
+            </div>
+            <input type="text" id="to" placeholder="City or airport" value="London (LHR)" list="airports">
+          </div>
+          <datalist id="airports">
+            <option value="New York (JFK)"></option>
+            <option value="London (LHR)"></option>
+            <option value="Los Angeles (LAX)"></option>
+            <option value="Paris (CDG)"></option>
+            <option value="Tokyo (HND)"></option>
+            <option value="Dubai (DXB)"></option>
+            <option value="Singapore (SIN)"></option>
+            <option value="Sydney (SYD)"></option>
+            <option value="Chicago (ORD)"></option>
+            <option value="Frankfurt (FRA)"></option>
+          </datalist>
+        </div>
+      </div>
+
+      <!-- Depart / Return -->
+      <div class="row">
+        <div class="field-group">
+          <label><i class="fas fa-calendar-day"></i> Departure</label>
+          <input type="date" id="departDate" value="2025-07-15">
+        </div>
+        <div class="field-group">
+          <label><i class="fas fa-calendar-check"></i> Return</label>
+          <input type="date" id="returnDate" value="2025-07-22">
+        </div>
+        <div class="field-group">
+          <label><i class="fas fa-user"></i> Passengers</label>
+          <select id="passengers">
+            <option value="1">1 Adult</option>
+            <option value="2" selected>2 Adults</option>
+            <option value="3">3 Adults</option>
+            <option value="4">4 Adults</option>
+            <option value="1c">1 Adult, 1 Child</option>
+            <option value="2c">2 Adults, 1 Child</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Cabin class + extra row (baggage / flexible) -->
+      <div class="row passenger-row">
+        <div class="field-group cabin-group">
+          <label><i class="fas fa-chair"></i> Cabin class</label>
+          <select id="cabin">
+            <option value="economy" selected>Economy</option>
+            <option value="premium">Premium Economy</option>
+            <option value="business">Business</option>
+            <option value="first">First Class</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label><i class="fas fa-suitcase"></i> Baggage</label>
+          <select id="baggage">
+            <option value="1">1 checked bag (23kg)</option>
+            <option value="2" selected>2 checked bags (23kg)</option>
+            <option value="0">Carry-on only</option>
+            <option value="3">3 checked bags (23kg)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label><i class="fas fa-shield-alt"></i> Flexible ticket</label>
+          <select id="flexible">
+            <option value="no">No (standard)</option>
+            <option value="yes">Yes (+$45)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action bar: price and book button -->
+      <div class="action-bar">
+        <div class="price-summary">
+          <span class="label">Total price</span>
+          <div class="amount" id="priceDisplay">$642 <small>USD</small></div>
+        </div>
+        <button type="button" class="book-btn" id="bookBtn">
+          <i class="fas fa-ticket-alt"></i> Book flight
+        </button>
+      </div>
+      <div class="note">
+        <i class="fas fa-lock" style="margin-right: 6px;"></i> Secure booking · No hidden fees
+      </div>
+    </form>
+  </div>
+
+  <script>
+    (function() {
+      // Get DOM elements
+      const fromInput = document.getElementById('from');
+      const toInput = document.getElementById('to');
+      const swapBtn = document.getElementById('swapBtn');
+      const departDate = document.getElementById('departDate');
+      const returnDate = document.getElementById('returnDate');
+      const passengersSelect = document.getElementById('passengers');
+      const cabinSelect = document.getElementById('cabin');
+      const baggageSelect = document.getElementById('baggage');
+      const flexibleSelect = document.getElementById('flexible');
+      const priceDisplay = document.getElementById('priceDisplay');
+      const bookBtn = document.getElementById('bookBtn');
+      const tripRadios = document.querySelectorAll('input[name="trip"]');
+
+      // --- Helper: get selected trip type ---
+      function getTripType() {
+        for (let radio of tripRadios) {
+          if (radio.checked) return radio.value;
+        }
+        return 'round';
+      }
+
+      // --- Base price simulation (dynamic) ---
+      function calculatePrice() {
+        // Base price per adult
+        let basePerAdult = 210;
+        // Cabin multipliers
+        const cabinMultiplier = {
+          economy: 1.0,
+          premium: 1.7,
+          business: 3.2,
+          first: 5.0
+        };
+        // Baggage fee (per bag beyond first)
+        const baggage = baggageSelect.value;
+        let baggageFee = 0;
+        if (baggage === '0') baggageFee = 0;
+        else if (baggage === '1') baggageFee = 0;      // first bag free
+        else if (baggage === '2') baggageFee = 35;     // second bag
+        else if (baggage === '3') baggageFee = 70;     // third bag
+
+        // Flexible fee
+        const flexFee = flexibleSelect.value === 'yes' ? 45 : 0;
+
+        // Passengers (parse value)
+        const paxValue = passengersSelect.value;
+        let adults = 1;
+        let children = 0;
+
+        if (paxValue === '1') { adults = 1; }
+        else if (paxValue === '2') { adults = 2; }
+        else if (paxValue === '3') { adults = 3; }
+        else if (paxValue === '4') { adults = 4; }
+        else if (paxValue === '1c') { adults = 1; children = 1; }
+        else if (paxValue === '2c') { adults = 2; children = 1; }
+        else { adults = 2; } // fallback
+
+        // Child price is 75% of adult base
+        const adultBase = basePerAdult * cabinMultiplier[cabinSelect.value];
+        const childBase = adultBase * 0.75;
+
+        let total = (adults * adultBase) + (children * childBase);
+        // add baggage fee (per passenger? but simplified: flat per booking)
+        total += baggageFee;
+        // add flexible
+        total += flexFee;
+
+        // Round to nearest dollar
+        total = Math.round(total);
+
+        // Update display
+        priceDisplay.innerHTML = `$${total} <small>USD</small>`;
+        return total;
+      }
+
+      // --- Toggle return date visibility based on trip type ---
+      function updateTripType() {
+        const trip = getTripType();
+        if (trip === 'oneway') {
+          returnDate.disabled = true;
+          returnDate.style.opacity = '0.5';
+          returnDate.style.cursor = 'not-allowed';
+          // if disabled, maybe set a placeholder? but keep value
+        } else {
+          returnDate.disabled = false;
+          returnDate.style.opacity = '1';
+          returnDate.style.cursor = 'pointer';
+        }
+        // multi-city just changes UI but we don't implement; we leave return enabled
+        // but also adjust price? (keep simple)
+        calculatePrice();
+      }
+
+      // --- Swap from/to ---
+      function swapLocations() {
+        const fromVal = fromInput.value;
+        const toVal = toInput.value;
+        fromInput.value = toVal;
+        toInput.value = fromVal;
+        calculatePrice(); // just for consistency (price unaffected but fine)
+      }
+
+      // --- Attach event listeners ---
+      swapBtn.addEventListener('click', swapLocations);
+
+      // Recalculate price on any change
+      const inputsToWatch = [
+        passengersSelect, cabinSelect, baggageSelect, flexibleSelect
+      ];
+      inputsToWatch.forEach(el => el.addEventListener('change', calculatePrice));
+
+      // also for trip radios
+      tripRadios.forEach(radio => radio.addEventListener('change', () => {
+        updateTripType();
+        calculatePrice();
+      }));
+
+      // Also update when dates change (no price change but okay)
+      departDate.addEventListener('change', calculatePrice);
+      returnDate.addEventListener('change', calculatePrice);
+
+      // For from/to we don't need price but we can still keep
+      fromInput.addEventListener('input', calculatePrice);
+      toInput.addEventListener('input', calculatePrice);
+
+      // --- booking action (demo) ---
+      bookBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // Gather values for a friendly alert
+        const tripType = getTripType();
+        const from = fromInput.value.trim() || 'New York (JFK)';
+        const to = toInput.value.trim() || 'London (LHR)';
+        const depDate = departDate.value || '2025-07-15';
+        let retDate = returnDate.value;
+        if (tripType === 'oneway' || returnDate.disabled) {
+          retDate = '—';
+        }
+        const paxText = passengersSelect.options[passengersSelect.selectedIndex].text;
+        const cabinText = cabinSelect.options[cabinSelect.selectedIndex].text;
+        const baggageText = baggageSelect.options[baggageSelect.selectedIndex].text;
+        const flexText = flexibleSelect.options[flexibleSelect.selectedIndex].text;
+        const priceText = priceDisplay.textContent.trim();
+
+        // Simple validation
+        if (!from || !to) {
+          alert('Please enter both departure and destination.');
+          return;
+        }
+
+        const summary = `✈️ Flight Booking Summary\n\n` +
+          `Trip: ${tripType === 'round' ? 'Round trip' : tripType === 'oneway' ? 'One way' : 'Multi-city'}\n` +
+          `From: ${from}\n` +
+          `To: ${to}\n` +
+          `Depart: ${depDate}\n` +
+          `Return: ${retDate}\n` +
+          `Passengers: ${paxText}\n` +
+          `Cabin: ${cabinText}\n` +
+          `Baggage: ${baggageText}\n` +
+          `Flexible: ${flexText}\n\n` +
+          `Total: ${priceText}\n\n` +
+          `✅ Your flight is ready to be booked! (demo)`;
+
+        alert(summary);
+        // In a real app, you would submit the form or redirect
+      });
+
+      // --- Initialize ---
+      updateTripType();   // disables return if one-way selected (but round checked default)
+      // Set default dates if not set
+      if (!departDate.value) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate() + 7).padStart(2, '0'); // +7 days
+        departDate.value = `${yyyy}-${mm}-${dd}`;
+      }
+      if (!returnDate.value) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate() + 14).padStart(2, '0'); // +14 days
+        returnDate.value = `${yyyy}-${mm}-${dd}`;
+      }
+
+      // Calculate initial price
+      calculatePrice();
+
+      // Additional: if oneway is chosen later, return date disabled and we update again.
+      // Also ensure that if user selects "oneway", return date field is visually disabled.
+      // Already handled via updateTripType.
+    })();
+  </script>
+</body>
+</html>
